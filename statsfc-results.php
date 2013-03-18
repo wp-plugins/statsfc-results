@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/developers
 Description: StatsFC Results
-Version: 1.0
+Version: 1.0.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -221,7 +221,7 @@ class StatsFC_Results extends WP_Widget {
 							?>
 							<thead>
 								<tr>
-									<th colspan="3"><?php echo date('l, j F Y', strtotime($result->date)); ?></th>
+									<th colspan="5"><?php echo date('l, j F Y', strtotime($result->date)); ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -230,13 +230,13 @@ class StatsFC_Results extends WP_Widget {
 						?>
 						<tr>
 							<td class="statsfc_home<?php echo ($team == $result->home ? ' statsfc_highlight' : ''); ?>">
-								<span class="statsfc_status"><?php echo esc_attr($result->status); ?></span>
+								<span class="statsfc_status"><?php echo $this->_status($result->status); ?></span>
 								<?php echo esc_attr($result->homeshort); ?>
 							</td>
-							<td class="statsfc_homeScore"><?php echo esc_attr($result->homeScore); ?></td>
+							<td class="statsfc_homeScore"><?php echo $this->_score($result, 'home'); ?></td>
 							<td class="statsfc_vs">-</td>
-							<td class="statsfc_awayScore"><?php echo esc_attr($result->awayScore); ?></td>
-							<td class="statsfc_away<?php echo ($team == $fixture->away ? ' statsfc_highlight' : ''); ?>"><?php echo esc_attr($fixture->awayshort); ?></td>
+							<td class="statsfc_awayScore"><?php echo $this->_score($result, 'away'); ?></td>
+							<td class="statsfc_away<?php echo ($team == $result->away ? ' statsfc_highlight' : ''); ?>"><?php echo esc_attr($result->awayshort); ?></td>
 						</tr>
 					<?php
 					}
@@ -251,6 +251,28 @@ class StatsFC_Results extends WP_Widget {
 		}
 
 		echo $after_widget;
+	}
+
+	private function _status($status) {
+		switch ($status) {
+			case 'Finished':		return '<abbr title="Full-time">FT</abbr>';
+			case 'Finished AET':	return '<abbr title="After extra-time"</abbr>AET</abbr>';
+			case 'Finished AP':		return '<abbr title="After penalties">AP</abbr>';
+			case 'Postponed':		return '<abbr title="Postponed">Postp.</abbr>';
+			case 'Abandoned':		return '<abbr title="Abandoned">Aband.</abbr>';
+		}
+
+		return $status;
+	}
+
+	private function _score($data, $team) {
+		$index = ($team == 'home' ? 0 : 1);
+
+		switch ($data->status) {
+			case 'Finished':		return $data->fulltime[$index];
+			case 'Finished AET':	return ($data->fulltime[$index] + $data->extratime[$index]);
+			case 'Finished AP':		return ($data->fulltime[$index] + $data->extratime[$index]) . '<sup>' . $data->penalties[$index] . '</sup>';
+		}
 	}
 }
 
