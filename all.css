@@ -1,4 +1,4 @@
-.statsfc_results table {				display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; }
+.statsfc_results table {				display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; margin-bottom: 0; }
 .statsfc_results th,
 .statsfc_results td {					text-align: left; padding: 2px 5px; border-bottom: 1px solid silver; }
 .statsfc_results .statsfc_home,
@@ -9,4 +9,4 @@
 .statsfc_results .statsfc_awayScore {	text-align: center; }
 .statsfc_results .statsfc_highlight {	font-weight: bold; }
 .statsfc_results .statsfc_status {		font-weight: normal; float: left; }
-.statsfc_results .statsfc_footer {		display: block !important; text-align: right; }
+.statsfc_results .statsfc_footer {		display: block !important; text-align: right; margin-top: 0; padding: 2px 5px; }
