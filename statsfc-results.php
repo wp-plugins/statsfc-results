@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/developers
 Description: StatsFC Results
-Version: 1.0.1
+Version: 1.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -60,6 +60,7 @@ class StatsFC_Results extends WP_Widget {
 			'api_key'		=> __('', STATSFC_RESULTS_ID),
 			'competition'	=> __(current(array_keys(self::$_competitions)), STATSFC_RESULTS_ID),
 			'team'			=> __('', STATSFC_RESULTS_ID),
+			'limit'			=> __(5, STATSFC_RESULTS_ID),
 			'default_css'	=> __('', STATSFC_RESULTS_ID)
 		);
 
@@ -68,6 +69,7 @@ class StatsFC_Results extends WP_Widget {
 		$api_key		= strip_tags($instance['api_key']);
 		$competition	= strip_tags($instance['competition']);
 		$team			= strip_tags($instance['team']);
+		$limit			= strip_tags($instance['limit']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
 		<p>
@@ -129,6 +131,13 @@ class StatsFC_Results extends WP_Widget {
 		</p>
 		<p>
 			<label>
+				<?php _e('Number of results', STATSFC_RESULTS_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('limit'); ?>" type="number" value="<?php echo esc_attr($limit); ?>" min="0" max="99"><br>
+				<small>Applies to single team only. Choose '0' for all results.</small>
+			</label>
+		</p>
+		<p>
+			<label>
 				<?php _e('Use default CSS?', STATSFC_RESULTS_ID); ?>
 				<input type="checkbox" name="<?php echo $this->get_field_name('default_css'); ?>"<?php echo ($default_css == 'on' ? ' checked' : ''); ?>>
 			</label>
@@ -152,6 +161,7 @@ class StatsFC_Results extends WP_Widget {
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
 		$instance['team']			= strip_tags($new_instance['team']);
+		$instance['limit']			= strip_tags($new_instance['limit']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
 		return $instance;
@@ -172,12 +182,17 @@ class StatsFC_Results extends WP_Widget {
 		$api_key		= $instance['api_key'];
 		$competition	= $instance['competition'];
 		$team			= $instance['team'];
+		$limit			= (int) $instance['limit'];
 		$default_css	= $instance['default_css'];
+
+		if (empty($team)) {
+			$limit = 20;
+		}
 
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
 
-		$data = file_get_contents('https://api.statsfc.com/' . esc_attr($competition) . '/results.json?key=' . $api_key . '&limit=20' . (! empty($team) ? '&team=' . esc_attr($team) : ''));
+		$data = file_get_contents('https://api.statsfc.com/' . esc_attr($competition) . '/results.json?key=' . $api_key . (! empty($limit) ? '&limit=' . $limit : '') . (! empty($team) ? '&team=' . esc_attr($team) : ''));
 
 		try {
 			if (empty($data)) {
@@ -202,7 +217,7 @@ class StatsFC_Results extends WP_Widget {
 				<table>
 					<?php
 					$total		= 0;
-					$limit		= (! empty($team) ? 5 : 10);
+					$limit		= (! empty($team) ? $limit : 10);
 					$previous	= null;
 
 					foreach ($json as $result) {
@@ -213,7 +228,7 @@ class StatsFC_Results extends WP_Widget {
 								echo '</tbody>' . PHP_EOL;
 							}
 
-							if ($total > $limit) {
+							if ($limit > 0 && $total > $limit) {
 								break;
 							}
 
