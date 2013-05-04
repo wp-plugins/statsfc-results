@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/developers
 Description: StatsFC Results
-Version: 1.1
+Version: 1.1.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -116,7 +116,7 @@ class StatsFC_Results extends WP_Widget {
 						<option></option>
 						<?php
 						foreach ($json as $row) {
-							echo '<option' . ($row->name == $team ? ' selected' : '') . '>' . esc_attr($row->name) . '</option>' . PHP_EOL;
+							echo '<option value="' . esc_attr($row->path) . '"' . ($row->path == $team ? ' selected' : '') . '>' . esc_attr($row->name) . '</option>' . PHP_EOL;
 						}
 						?>
 					</select>
