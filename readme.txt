@@ -12,7 +12,7 @@ This widget will place list of Premier League, FA Cup or League Cup results in y
 
 == Description ==
 
-Add a list of Premier League, FA Cup or League Cup results to your WordPress website. To request an API key sign up for free at [statsfc.com/developers](https://statsfc.com/developers).
+Add a list of Premier League, FA Cup or League Cup results to your WordPress website. To request an API key sign up for free at [statsfc.com](https://statsfc.com).
 
 For a demo, check out [wp.statsfc.com](http://wp.statsfc.com).
 
@@ -21,7 +21,7 @@ For a demo, check out [wp.statsfc.com](http://wp.statsfc.com).
 1. Upload the `statsfc-results` folder and all files to the `/wp-content/plugins/` directory
 2. Activate the widget through the 'Plugins' menu in WordPress
 3. Drag the widget to the relevant sidebar on the 'Widgets' page in WordPress
-4. Set the API key and any other options. If you don't have any API key, sign up for free at statsfc.com/developers
+4. Set the API key and any other options. If you don't have any API key, sign up for free at statsfc.com
 
 If you want to place the widget into a page rather than a sidebar:
 

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: StatsFC Results
-Plugin URI: https://statsfc.com/developers
+Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
 Version: 1.1.1
 Author: Will Woodward
