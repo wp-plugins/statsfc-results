@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.2.4
+Version: 1.3
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -32,13 +32,6 @@ define('STATSFC_RESULTS_NAME',	'StatsFC Results');
  * Adds StatsFC widget.
  */
 class StatsFC_Results extends WP_Widget {
-	private static $_competitions = array(
-		'premier-league'	=> 'Premier League',
-		'fa-cup'			=> 'FA Cup',
-		'league-cup'		=> 'League Cup',
-		'community-shield'	=> 'Community Shield'
-	);
-
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -59,9 +52,12 @@ class StatsFC_Results extends WP_Widget {
 		$defaults = array(
 			'title'			=> __('Results', STATSFC_RESULTS_ID),
 			'api_key'		=> __('', STATSFC_RESULTS_ID),
-			'competition'	=> __(current(array_keys(self::$_competitions)), STATSFC_RESULTS_ID),
+			'competition'	=> __('', STATSFC_RESULTS_ID),
 			'team'			=> __('', STATSFC_RESULTS_ID),
-			'limit'			=> __(5, STATSFC_RESULTS_ID),
+			'from'			=> __('', STATSFC_RESULTS_ID),
+			'to'			=> __('', STATSFC_RESULTS_ID),
+			'limit'			=> __(0, STATSFC_RESULTS_ID),
+			'timezone'		=> __('Europe/London', STATSFC_RESULTS_ID),
 			'default_css'	=> __('', STATSFC_RESULTS_ID)
 		);
 
@@ -70,7 +66,10 @@ class StatsFC_Results extends WP_Widget {
 		$api_key		= strip_tags($instance['api_key']);
 		$competition	= strip_tags($instance['competition']);
 		$team			= strip_tags($instance['team']);
+		$from			= strip_tags($instance['from']);
+		$to				= strip_tags($instance['to']);
 		$limit			= strip_tags($instance['limit']);
+		$timezone		= strip_tags($instance['timezone']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
 		<p>
@@ -88,43 +87,32 @@ class StatsFC_Results extends WP_Widget {
 		<p>
 			<label>
 				<?php _e('Competition', STATSFC_RESULTS_ID); ?>:
-				<select name="<?php echo $this->get_field_name('competition'); ?>">
-					<?php
-					foreach (self::$_competitions as $id => $name) {
-						echo '<option value="' . esc_attr($id) . '"' . ($id == $competition ? ' selected' : '') . '>' . esc_attr($name) . '</option>' . PHP_EOL;
-					}
-					?>
-				</select>
-			</label>
-		</p>
-		<p>
-			<label>
-				<?php _e('Team', STATSFC_RESULTS_ID); ?>:
 				<?php
 				try {
-					$data = $this->_fetchData('https://api.statsfc.com/premier-league/teams.json?key=' . (! empty($api_key) ? $api_key : 'free'));
+					$data = $this->_fetchData('https://api.statsfc.com/crowdscores/competitions.php');
 
 					if (empty($data)) {
-						throw new Exception('There was an error connecting to the StatsFC API');
+						throw new Exception;
 					}
 
 					$json = json_decode($data);
+
 					if (isset($json->error)) {
-						throw new Exception($json->error);
+						throw new Exception;
 					}
 					?>
-					<select class="widefat" name="<?php echo $this->get_field_name('team'); ?>">
+					<select class="widefat" name="<?php echo $this->get_field_name('competition'); ?>">
 						<option></option>
 						<?php
-						foreach ($json as $row) {
-							echo '<option value="' . esc_attr($row->path) . '"' . ($row->path == $team ? ' selected' : '') . '>' . esc_attr($row->name) . '</option>' . PHP_EOL;
+						foreach ($json as $comp) {
+							echo '<option value="' . esc_attr($comp->key) . '"' . ($comp->key == $competition ? ' selected' : '') . '>' . esc_attr($comp->name) . '</option>' . PHP_EOL;
 						}
 						?>
 					</select>
 				<?php
 				} catch (Exception $e) {
 				?>
-					<input class="widefat" name="<?php echo $this->get_field_name('team'); ?>" type="text" value="<?php echo esc_attr($team); ?>">
+					<input class="widefat" name="<?php echo $this->get_field_name('competition'); ?>" type="text" value="<?php echo esc_attr($competition); ?>">
 				<?php
 				}
 				?>
@@ -132,9 +120,41 @@ class StatsFC_Results extends WP_Widget {
 		</p>
 		<p>
 			<label>
-				<?php _e('Number of results', STATSFC_RESULTS_ID); ?>:
+				<?php _e('Team', STATSFC_RESULTS_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('team'); ?>" type="text" value="<?php echo esc_attr($team); ?>" placeholder="e.g., Liverpool, Manchester City">
+			</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('From', STATSFC_RESULTS_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('from'); ?>" type="text" value="<?php echo esc_attr($from); ?>" placeholder="e.g., <?php echo date('Y-m-d'); ?>, today">
+			</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('To', STATSFC_RESULTS_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('to'); ?>" type="text" value="<?php echo esc_attr($to); ?>" placeholder="e.g., <?php echo date('Y-m-d', '+2 weeks'); ?>, +2 weeks, next Monday">
+			</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('Limit', STATSFC_RESULTS_ID); ?>:
 				<input class="widefat" name="<?php echo $this->get_field_name('limit'); ?>" type="number" value="<?php echo esc_attr($limit); ?>" min="0" max="99"><br>
 				<small>Applies to single team only. Choose '0' for all results.</small>
+			</label>
+		</p>
+		<p>
+			<label>
+				<?php _e('Timezone', STATSFC_RESULTS_ID); ?>:
+				<select class="widefat" name="<?php echo $this->get_field_name('timezone'); ?>">
+					<?php
+					$zones = timezone_identifiers_list();
+
+					foreach ($zones as $zone) {
+						echo '<option value="' . esc_attr($zone) . '"' . ($zone == $timezone ? ' selected' : '') . '>' . esc_attr($zone) . '</option>' . PHP_EOL;
+					}
+					?>
+				</select>
 			</label>
 		</p>
 		<p>
@@ -162,7 +182,10 @@ class StatsFC_Results extends WP_Widget {
 		$instance['api_key']		= strip_tags($new_instance['api_key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
 		$instance['team']			= strip_tags($new_instance['team']);
+		$instance['from']			= strip_tags($new_instance['from']);
+		$instance['to']				= strip_tags($new_instance['to']);
 		$instance['limit']			= strip_tags($new_instance['limit']);
+		$instance['timezone']		= strip_tags($new_instance['timezone']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
 		return $instance;
@@ -183,31 +206,30 @@ class StatsFC_Results extends WP_Widget {
 		$api_key		= $instance['api_key'];
 		$competition	= $instance['competition'];
 		$team			= $instance['team'];
+		$from			= $instance['from'];
+		$to				= $instance['to'];
 		$limit			= (int) $instance['limit'];
+		$timezone		= $instance['timezone'];
 		$default_css	= $instance['default_css'];
-
-		if (empty($team)) {
-			$limit = 20;
-		}
 
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/' . esc_attr($competition) . '/results.json?key=' . $api_key . (! empty($limit) ? '&limit=' . $limit : '') . (! empty($team) ? '&team=' . esc_attr($team) : ''));
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/results.php?key=' . urlencode($api_key) . '&competition=' . urlencode($competition) . '&team=' . urlencode($team) . '&from=' . urlencode($from) . '&to=' . urlencode($to) . '&limit=' . urlencode($limit) . '&timezone=' . urlencode($timezone));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to the StatsFC API');
 			}
 
 			$json = json_decode($data);
+
 			if (isset($json->error)) {
 				throw new Exception($json->error);
 			}
 
-			if (count($json) == 0) {
-				throw new Exception('No results found');
-			}
+			$results	= $json->matches;
+			$customer	= $json->customer;
 
 			if ($default_css) {
 				wp_register_style(STATSFC_RESULTS_ID . '-css', plugins_url('all.css', __FILE__));
@@ -215,55 +237,57 @@ class StatsFC_Results extends WP_Widget {
 			}
 			?>
 			<div class="statsfc_results">
-				<table>
+				<div>
 					<?php
-					$total		= 0;
-					$limit		= (! empty($team) ? $limit : 10);
-					$previous	= null;
-
-					foreach ($json as $result) {
-						$total++;
-
-						if (date('Y-m-d', strtotime($result->date)) !== $previous) {
-							if ($total > 1) {
-								echo '</tbody>' . PHP_EOL;
-							}
-
-							if ($limit > 0 && $total > $limit) {
-								break;
-							}
-
-							$previous = date('Y-m-d', strtotime($result->date));
-							?>
+					foreach ($results as $date => $matches) {
+					?>
+						<table>
 							<thead>
 								<tr>
-									<th colspan="5"><?php echo date('l, j F Y', strtotime($result->date)); ?></th>
+									<th colspan="5"><?php echo esc_attr($date); ?></th>
 								</tr>
 							</thead>
 							<tbody>
-						<?php
-						}
-						?>
-						<tr>
-							<td class="statsfc_home<?php echo ($team == $result->home ? ' statsfc_highlight' : ''); ?>">
-								<span class="statsfc_status"><?php echo $this->_status($result->status); ?></span>
-								<?php echo esc_attr($result->homeshort); ?>
-							</td>
-							<td class="statsfc_homeScore"><?php echo $this->_score($result, 'home'); ?></td>
-							<td class="statsfc_vs">-</td>
-							<td class="statsfc_awayScore"><?php echo $this->_score($result, 'away'); ?></td>
-							<td class="statsfc_away<?php echo ($team == $result->away ? ' statsfc_highlight' : ''); ?>"><?php echo esc_attr($result->awayshort); ?></td>
-						</tr>
+								<?php
+								foreach ($matches as $match) {
+								?>
+									<tr>
+										<td class="statsfc_team statsfc_home statsfc_badge"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->homepath) . '.png);"' : ''); ?>>
+											<span class="statsfc_status"><?php echo esc_attr($match->status); ?></span>
+											<?php echo esc_attr($match->home); ?>
+										</td>
+										<td class="statsfc_homeScore"><?php echo esc_attr($match->score[0]); ?></td>
+										<td class="statsfc_vs">-</td>
+										<td class="statsfc_awayScore"><?php echo esc_attr($match->score[1]); ?></td>
+										<td class="statsfc_team statsfc_away statsfc_badge"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->awaypath) . '.png);"' : ''); ?>>
+											<?php
+											echo esc_attr($match->away);
+
+											if (strlen($competition) == 0) {
+											?>
+												<span class="statsfc_competition">
+													<abbr title="<?php echo esc_attr($match->competition); ?>"><?php echo esc_attr($match->competitionkey); ?></abbr>
+												</span>
+											<?php
+											}
+											?>
+										</td>
+									</tr>
+								<?php
+								}
+								?>
+							</tbody>
+						</table>
 					<?php
 					}
 					?>
-				</table>
+				</div>
 
-				<p class="statsfc_footer"><small>Powered by StatsFC.com</small></p>
+				<p class="statsfc_footer">Powered by StatsFC.com. Fan data via CrowdScores.com</p>
 			</div>
 		<?php
 		} catch (Exception $e) {
-			echo '<p style="text-align: center;"><img src="//statsfc.com/i/icon.png" width="64" height="64" alt="Football widgets and API"><br><a href="https://statsfc.com" title="Football widgets and API" target="_blank">StatsFC.com</a> – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
+			echo '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
 		}
 
 		echo $after_widget;
@@ -300,28 +324,6 @@ class StatsFC_Results extends WP_Widget {
 
 	private function _fopenRequest($url) {
 		return file_get_contents($url);
-	}
-
-	private function _status($status) {
-		switch ($status) {
-			case 'Finished':		return '<abbr title="Full-time">FT</abbr>';
-			case 'Finished AET':	return '<abbr title="After extra-time"</abbr>AET</abbr>';
-			case 'Finished AP':		return '<abbr title="After penalties">AP</abbr>';
-			case 'Postponed':		return '<abbr title="Postponed">Postp.</abbr>';
-			case 'Abandoned':		return '<abbr title="Abandoned">Aband.</abbr>';
-		}
-
-		return $status;
-	}
-
-	private function _score($data, $team) {
-		$index = ($team == 'home' ? 0 : 1);
-
-		switch ($data->status) {
-			case 'Finished':		return $data->fulltime[$index];
-			case 'Finished AET':	return ($data->fulltime[$index] + $data->extratime[$index]);
-			case 'Finished AP':		return ($data->fulltime[$index] + $data->extratime[$index]) . '<sup>' . $data->penalties[$index] . '</sup>';
-		}
 	}
 }
 
