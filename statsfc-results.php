@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.3
+Version: 1.3.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -283,7 +283,7 @@ class StatsFC_Results extends WP_Widget {
 					?>
 				</div>
 
-				<p class="statsfc_footer">Powered by StatsFC.com. Fan data via CrowdScores.com</p>
+				<p class="statsfc_footer"><small>Powered by StatsFC.com. Fan data via CrowdScores.com</small></p>
 			</div>
 		<?php
 		} catch (Exception $e) {
