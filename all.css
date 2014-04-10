@@ -2,7 +2,7 @@
 .statsfc_results th,
 .statsfc_results td {					text-align: left; padding: 2px 5px; border-top: 1px solid silver; }
 .statsfc_results .statsfc_incident td {	font-size: small; border: none; color: #666; }
-.statsfc_results thead th {				text-transform: uppercase; font-size: small; background-color: silver; border: none; }
+.statsfc_results thead th {				text-transform: uppercase; font-size: small; background-color: silver; }
 .statsfc_results .statsfc_team {		width: 50%; }
 .statsfc_results .statsfc_home {		text-align: right; }
 .statsfc_results .statsfc_homeScore,
