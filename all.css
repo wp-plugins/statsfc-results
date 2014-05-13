@@ -1,6 +1,6 @@
-.statsfc_results table {				display: table; width: 100%; border-collapse: collapse; border: 1px solid silver; }
+.statsfc_results table {				display: table; width: 100%; border-collapse: collapse; }
 .statsfc_results th,
-.statsfc_results td {					text-align: left; padding: 2px 5px; border-top: 1px solid silver; }
+.statsfc_results td {					text-align: left; padding: 2px 5px; }
 .statsfc_results .statsfc_incident td {	font-size: small; border: none; color: #666; }
 .statsfc_results thead th {				text-transform: uppercase; font-size: small; background-color: silver; }
 .statsfc_results .statsfc_team {		width: 50%; }
