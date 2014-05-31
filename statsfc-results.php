@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.3.3
+Version: 1.4
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -32,6 +32,20 @@ define('STATSFC_RESULTS_NAME',	'StatsFC Results');
  * Adds StatsFC widget.
  */
 class StatsFC_Results extends WP_Widget {
+	public $isShortcode = false;
+
+	private static $defaults = array(
+		'title'			=> '',
+		'key'			=> '',
+		'competition'	=> '',
+		'team'			=> '',
+		'from'			=> '',
+		'to'			=> '',
+		'limit'			=> 0,
+		'timezone'		=> 'Europe/London',
+		'default_css'	=> ''
+	);
+
 	/**
 	 * Register widget with WordPress.
 	 */
@@ -49,21 +63,9 @@ class StatsFC_Results extends WP_Widget {
 	 * @todo Option to show match incidents.
 	 */
 	public function form($instance) {
-		$defaults = array(
-			'title'			=> __('Results', STATSFC_RESULTS_ID),
-			'api_key'		=> __('', STATSFC_RESULTS_ID),
-			'competition'	=> __('', STATSFC_RESULTS_ID),
-			'team'			=> __('', STATSFC_RESULTS_ID),
-			'from'			=> __('', STATSFC_RESULTS_ID),
-			'to'			=> __('', STATSFC_RESULTS_ID),
-			'limit'			=> __(0, STATSFC_RESULTS_ID),
-			'timezone'		=> __('Europe/London', STATSFC_RESULTS_ID),
-			'default_css'	=> __('', STATSFC_RESULTS_ID)
-		);
-
-		$instance		= wp_parse_args((array) $instance, $defaults);
+		$instance		= wp_parse_args((array) $instance, self::$defaults);
 		$title			= strip_tags($instance['title']);
-		$api_key		= strip_tags($instance['api_key']);
+		$key			= strip_tags($instance['key']);
 		$competition	= strip_tags($instance['competition']);
 		$team			= strip_tags($instance['team']);
 		$from			= strip_tags($instance['from']);
@@ -80,8 +82,8 @@ class StatsFC_Results extends WP_Widget {
 		</p>
 		<p>
 			<label>
-				<?php _e('API key', STATSFC_RESULTS_ID); ?>:
-				<input class="widefat" name="<?php echo $this->get_field_name('api_key'); ?>" type="text" value="<?php echo esc_attr($api_key); ?>">
+				<?php _e('Key', STATSFC_RESULTS_ID); ?>:
+				<input class="widefat" name="<?php echo $this->get_field_name('key'); ?>" type="text" value="<?php echo esc_attr($key); ?>">
 			</label>
 		</p>
 		<p>
@@ -179,7 +181,7 @@ class StatsFC_Results extends WP_Widget {
 	public function update($new_instance, $old_instance) {
 		$instance					= $old_instance;
 		$instance['title']			= strip_tags($new_instance['title']);
-		$instance['api_key']		= strip_tags($new_instance['api_key']);
+		$instance['key']			= strip_tags($new_instance['key']);
 		$instance['competition']	= strip_tags($new_instance['competition']);
 		$instance['team']			= strip_tags($new_instance['team']);
 		$instance['from']			= strip_tags($new_instance['from']);
@@ -203,7 +205,7 @@ class StatsFC_Results extends WP_Widget {
 		extract($args);
 
 		$title			= apply_filters('widget_title', $instance['title']);
-		$api_key		= $instance['api_key'];
+		$key			= $instance['key'];
 		$competition	= $instance['competition'];
 		$team			= $instance['team'];
 		$from			= $instance['from'];
@@ -212,11 +214,11 @@ class StatsFC_Results extends WP_Widget {
 		$timezone		= $instance['timezone'];
 		$default_css	= $instance['default_css'];
 
-		echo $before_widget;
-		echo $before_title . $title . $after_title;
+		$html  = $before_widget;
+		$html .= $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/results.php?key=' . urlencode($api_key) . '&competition=' . urlencode($competition) . '&team=' . urlencode($team) . '&from=' . urlencode($from) . '&to=' . urlencode($to) . '&limit=' . urlencode($limit) . '&timezone=' . urlencode($timezone));
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/results.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&team=' . urlencode($team) . '&from=' . urlencode($from) . '&to=' . urlencode($to) . '&limit=' . urlencode($limit) . '&timezone=' . urlencode($timezone));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to the StatsFC API');
@@ -235,62 +237,84 @@ class StatsFC_Results extends WP_Widget {
 				wp_register_style(STATSFC_RESULTS_ID . '-css', plugins_url('all.css', __FILE__));
 				wp_enqueue_style(STATSFC_RESULTS_ID . '-css');
 			}
-			?>
+
+			$html .= <<< HTML
 			<div class="statsfc_results">
 				<div>
-					<?php
-					foreach ($results as $date => $matches) {
-					?>
-						<table>
-							<thead>
-								<tr>
-									<th colspan="5"><?php echo esc_attr($date); ?></th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-								foreach ($matches as $match) {
-								?>
-									<tr>
-										<td class="statsfc_team statsfc_home statsfc_badge"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->homepath) . '.png);"' : ''); ?>>
-											<span class="statsfc_status"><?php echo esc_attr($match->status); ?></span>
-											<?php echo esc_attr($match->home); ?>
-										</td>
-										<td class="statsfc_homeScore"><?php echo esc_attr($match->score[0]); ?></td>
-										<td class="statsfc_vs">-</td>
-										<td class="statsfc_awayScore"><?php echo esc_attr($match->score[1]); ?></td>
-										<td class="statsfc_team statsfc_away statsfc_badge"<?php echo ($default_css ? ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->awaypath) . '.png);"' : ''); ?>>
-											<?php
-											echo esc_attr($match->away);
+HTML;
 
-											if (strlen($competition) == 0) {
-											?>
-												<span class="statsfc_competition">
-													<abbr title="<?php echo esc_attr($match->competition); ?>"><?php echo esc_attr($match->competitionkey); ?></abbr>
-												</span>
-											<?php
-											}
-											?>
-										</td>
-									</tr>
-								<?php
-								}
-								?>
-							</tbody>
-						</table>
-					<?php
+			foreach ($results as $date => $matches) {
+				$date = esc_attr($date);
+
+				$html .= <<< HTML
+				<table>
+					<thead>
+						<tr>
+							<th colspan="5">{$date}</th>
+						</tr>
+					</thead>
+					<tbody>
+HTML;
+
+				foreach ($matches as $match) {
+					$homeBadge		= '';
+					$awayBadge		= '';
+					$status			= esc_attr($match->status);
+					$home			= esc_attr($match->home);
+					$away			= esc_attr($match->away);
+					$homeScore		= esc_attr($match->score[0]);
+					$awayScore		= esc_attr($match->score[1]);
+					$competitionKey	= '';
+
+					if ($default_css) {
+						$homeBadge	= ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->homepath) . '.png);"';
+						$awayBadge	= ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->awaypath) . '.png);"';
 					}
-					?>
+
+					if (strlen($competition) == 0) {
+						$competitionKey = '<span class="statsfc_competition"><abbr title="' . esc_attr($match->competition) . '">' . esc_attr($match->competitionkey) . '</abbr></span>';
+					}
+
+					$html .= <<< HTML
+					<tr>
+						<td class="statsfc_team statsfc_home statsfc_badge"{$homeBadge}>
+							<span class="statsfc_status">{$status}</span>
+							{$home}
+						</td>
+						<td class="statsfc_homeScore">{$homeScore}</td>
+						<td class="statsfc_vs">-</td>
+						<td class="statsfc_awayScore">{$awayScore}</td>
+						<td class="statsfc_team statsfc_away statsfc_badge"{$awayBadge}>
+							{$away}
+							{$competitionKey}
+						</td>
+					</tr>
+HTML;
+				}
+
+				$html .= <<< HTML
+					</tbody>
+				</table>
+HTML;
+			}
+
+			$html .= <<< HTML
 				</div>
 
 				<p class="statsfc_footer"><small>Powered by StatsFC.com. Fan data via CrowdScores.com</small></p>
 			</div>
-		<?php
+HTML;
 		} catch (Exception $e) {
-			echo '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) .'</p>' . PHP_EOL;
+			$html .= '<p style="text-align: center;">StatsFC.com – ' . esc_attr($e->getMessage()) . '</p>' . PHP_EOL;
 		}
 
-		echo $after_widget;
+		$html .= $after_widget;
+
+		if ($this->isShortcode) {
+			return $html;
+		} else {
+			echo $html;
+		}
 	}
 
 	private function _fetchData($url) {
@@ -325,7 +349,17 @@ class StatsFC_Results extends WP_Widget {
 	private function _fopenRequest($url) {
 		return file_get_contents($url);
 	}
+
+	public static function shortcode($atts) {
+		$args = shortcode_atts(self::$defaults, $atts);
+
+		$widget					= new self;
+		$widget->isShortcode	= true;
+
+		return $widget->widget(array(), $args);
+	}
 }
 
 // register StatsFC widget
 add_action('widgets_init', create_function('', 'register_widget("' . STATSFC_RESULTS_ID . '");'));
+add_shortcode('statsfc-results', STATSFC_RESULTS_ID . '::shortcode');
