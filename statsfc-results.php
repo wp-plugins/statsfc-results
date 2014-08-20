@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.4.1
+Version: 1.4.2
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -267,8 +267,8 @@ HTML;
 					$competitionKey	= '';
 
 					if ($default_css) {
-						$homeBadge	= ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->homepath) . '.png);"';
-						$awayBadge	= ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->awaypath) . '.png);"';
+						$homeBadge	= ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->homepath) . '.svg);"';
+						$awayBadge	= ' style="background-image: url(//api.statsfc.com/kit/' . esc_attr($match->awaypath) . '.svg);"';
 					}
 
 					if (strlen($competition) == 0) {
