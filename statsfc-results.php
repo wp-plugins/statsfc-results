@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.4.3
+Version: 1.4.4
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -257,6 +257,8 @@ HTML;
 HTML;
 
 				foreach ($matches as $match) {
+					$homePath		= esc_attr($match->homepath);
+					$awayPath		= esc_attr($match->awaypath);
 					$homeBadge		= '';
 					$awayBadge		= '';
 					$status			= esc_attr($match->status);
@@ -277,14 +279,14 @@ HTML;
 
 					$html .= <<< HTML
 					<tr>
-						<td class="statsfc_team statsfc_home statsfc_badge"{$homeBadge}>
+						<td class="statsfc_team statsfc_home statsfc_badge statsfc_badge_{$homePath}"{$homeBadge}>
 							<span class="statsfc_status">{$status}</span>
 							{$home}
 						</td>
 						<td class="statsfc_homeScore">{$homeScore}</td>
 						<td class="statsfc_vs">-</td>
 						<td class="statsfc_awayScore">{$awayScore}</td>
-						<td class="statsfc_team statsfc_away statsfc_badge"{$awayBadge}>
+						<td class="statsfc_team statsfc_away statsfc_badge statsfc_badge_{$awayPath}"{$awayBadge}>
 							{$away}
 							{$competitionKey}
 						</td>
