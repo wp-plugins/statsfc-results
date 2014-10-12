@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.4.5
+Version: 1.4.6
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -42,6 +42,7 @@ class StatsFC_Results extends WP_Widget {
 		'from'			=> '',
 		'to'			=> '',
 		'limit'			=> 0,
+		'order'			=> 'desc',
 		'timezone'		=> 'Europe/London',
 		'default_css'	=> true
 	);
@@ -71,6 +72,7 @@ class StatsFC_Results extends WP_Widget {
 		$from			= strip_tags($instance['from']);
 		$to				= strip_tags($instance['to']);
 		$limit			= strip_tags($instance['limit']);
+		$order			= strip_tags($instance['order']);
 		$timezone		= strip_tags($instance['timezone']);
 		$default_css	= strip_tags($instance['default_css']);
 		?>
@@ -147,6 +149,23 @@ class StatsFC_Results extends WP_Widget {
 		</p>
 		<p>
 			<label>
+				<?php _e('Order', STATSFC_RESULTS_ID); ?>:
+				<select class="widefat" name="<?php echo $this->get_field_name('order'); ?>">
+					<?php
+					$orders = array(
+						'asc'  => 'Ascending',
+						'desc' => 'Descending'
+					);
+
+					foreach ($orders as $key => $value) {
+						echo '<option value="' . esc_attr($key) . '"' . ($key == $order ? ' selected' : '') . '>' . esc_attr($value) . '</option>' . PHP_EOL;
+					}
+					?>
+				</select>
+			</label>
+		</p>
+		<p>
+			<label>
 				<?php _e('Timezone', STATSFC_RESULTS_ID); ?>:
 				<select class="widefat" name="<?php echo $this->get_field_name('timezone'); ?>">
 					<?php
@@ -187,6 +206,7 @@ class StatsFC_Results extends WP_Widget {
 		$instance['from']			= strip_tags($new_instance['from']);
 		$instance['to']				= strip_tags($new_instance['to']);
 		$instance['limit']			= strip_tags($new_instance['limit']);
+		$instance['order']			= strip_tags($new_instance['order']);
 		$instance['timezone']		= strip_tags($new_instance['timezone']);
 		$instance['default_css']	= strip_tags($new_instance['default_css']);
 
@@ -211,6 +231,7 @@ class StatsFC_Results extends WP_Widget {
 		$from			= $instance['from'];
 		$to				= $instance['to'];
 		$limit			= (int) $instance['limit'];
+		$order			= $instance['order'];
 		$timezone		= $instance['timezone'];
 		$default_css	= filter_var($instance['default_css'], FILTER_VALIDATE_BOOLEAN);
 
@@ -218,7 +239,7 @@ class StatsFC_Results extends WP_Widget {
 		$html .= $before_title . $title . $after_title;
 
 		try {
-			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/results.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&team=' . urlencode($team) . '&from=' . urlencode($from) . '&to=' . urlencode($to) . '&limit=' . urlencode($limit) . '&timezone=' . urlencode($timezone));
+			$data = $this->_fetchData('https://api.statsfc.com/crowdscores/results.php?key=' . urlencode($key) . '&competition=' . urlencode($competition) . '&team=' . urlencode($team) . '&from=' . urlencode($from) . '&to=' . urlencode($to) . '&limit=' . urlencode($limit) . '&order=' . urlencode($order) . '&timezone=' . urlencode($timezone));
 
 			if (empty($data)) {
 				throw new Exception('There was an error connecting to the StatsFC API');

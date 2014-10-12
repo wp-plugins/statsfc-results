@@ -4,7 +4,7 @@ Donate link:
 Tags: widget, football, soccer, results, premier league, fa cup, league cup
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,6 +31,7 @@ You can also use the `[statsfc-results]` shortcode, with the following options:
 - `from` (optional): Date to show results from, e.g., `2014-01-01`
 - `to` (optional): Date to show results to, e.g., `2014-01-07`
 - `limit` (optional): Maximum number of results to show, e.g., `4`, `10`
+- `order` (optional): Whether to order ascending or descending, `asc` or `desc` *(default)*
 - `timezone` (optional): The timezone to convert match times to, e.g., `Europe/London` ([complete list](https://php.net/manual/en/timezones.php))
 - `default_css` (optional): Use the default widget styles, `true` or `false`
 
@@ -75,6 +76,8 @@ You can also use the `[statsfc-results]` shortcode, with the following options:
 **1.4.4**: Added badge class for each team
 
 **1.4.5**: Use built-in WordPress HTTP API functions
+
+**1.4.6**: Added `order` parameter
 
 == Upgrade notice ==
 
