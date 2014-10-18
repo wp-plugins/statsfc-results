@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.4.6
+Version: 1.5
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -324,6 +324,15 @@ HTML;
 			$html .= <<< HTML
 				</div>
 HTML;
+
+			if ($customer->adSupported) {
+				wp_register_script(STATSFC_RESULTS_ID . '-ad-js', plugins_url('ad.js', __FILE__), array('jquery'));
+				wp_enqueue_script(STATSFC_RESULTS_ID . '-ad-js');
+
+				$html .= <<< HTML
+				<div class="statsfc_ad"></div>
+HTML;
+			}
 
 			if ($customer->attribution) {
 				$html .= <<< HTML

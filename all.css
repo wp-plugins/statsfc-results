@@ -12,6 +12,7 @@
 .statsfc_results span {					color: silver; }
 .statsfc_results .statsfc_status {		font-weight: normal; float: left; }
 .statsfc_results .statsfc_competition {	font-weight: normal; float: right; }
+.statsfc_results .statsfc_ad {			display: block !important; text-align: center; margin-top: 10px; }
 .statsfc_results .statsfc_footer {		display: block !important; text-align: right; }
 
 .statsfc_results .statsfc_badge {		background-repeat: no-repeat; background-size: 20px 20px; line-height: 25px; }
