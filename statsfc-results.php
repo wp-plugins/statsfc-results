@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/docs/wordpress
 Description: StatsFC Results
-Version: 1.5
+Version: 1.5.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2

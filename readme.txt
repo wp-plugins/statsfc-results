@@ -4,7 +4,7 @@ Donate link:
 Tags: widget, football, soccer, results, premier league, fa cup, league cup
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 1.5
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,8 @@ You can also use the `[statsfc-results]` shortcode, with the following options:
 **1.4.6**: Added `order` parameter
 
 **1.5**: Enabled ad-support
+
+**1.5.1**: Allow more discrete ads for ad-supported accounts
 
 == Upgrade notice ==
 
