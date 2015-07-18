@@ -3,16 +3,16 @@ Contributors: willjw
 Donate link:
 Tags: widget, football, soccer, results, premier league, fa cup, league cup
 Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 1.5.1
+Tested up to: 4.2.2
+Stable tag: 1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This widget will place list of Premier League, FA Cup or League Cup results in your website.
+This widget will place list of football results in your website.
 
 == Description ==
 
-Add a list of Premier League, FA Cup or League Cup results to your WordPress website. To request a key sign up for your free trial at [statsfc.com](https://statsfc.com).
+Add a list of football results to your WordPress website. To request a key sign up for your free trial at [statsfc.com](https://statsfc.com).
 
 For a demo, check out [wp.statsfc.com/results/](http://wp.statsfc.com/results/).
 
@@ -28,9 +28,13 @@ You can also use the `[statsfc-results]` shortcode, with the following options:
 - `key` (required): Your StatsFC key
 - `competition` (required*): Competition key, e.g., `EPL`
 - `team` (required*): Team name, e.g., `Liverpool`
+- `highlight` (optional): The name of the team you want to highlight, e.g., `Liverpool`
 - `from` (optional): Date to show results from, e.g., `2014-01-01`
 - `to` (optional): Date to show results to, e.g., `2014-01-07`
 - `limit` (optional): Maximum number of results to show, e.g., `4`, `10`
+- `goals` (optional): Show goal scorers, `true` or `false`
+- `show_badges` (optional): Display team badges, `true` or `false`
+- `show_dates` (optional): Display match dates, `true` or `false`
 - `order` (optional): Whether to order ascending or descending, `asc` or `desc` *(default)*
 - `timezone` (optional): The timezone to convert match times to, e.g., `Europe/London` ([complete list](https://php.net/manual/en/timezones.php))
 - `default_css` (optional): Use the default widget styles, `true` or `false`
@@ -82,6 +86,8 @@ You can also use the `[statsfc-results]` shortcode, with the following options:
 **1.5**: Enabled ad-support
 
 **1.5.1**: Allow more discrete ads for ad-supported accounts
+
+**1.6**: Added `highlight`, `goals`, `show_badges` and `show_dates` parameters
 
 == Upgrade notice ==
 
