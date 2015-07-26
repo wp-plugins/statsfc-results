@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/widgets/results
 Description: StatsFC Results
-Version: 1.6
+Version: 1.6.1
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -27,7 +27,7 @@ License: GPL2
 
 define('STATSFC_RESULTS_ID',      'StatsFC_Results');
 define('STATSFC_RESULTS_NAME',    'StatsFC Results');
-define('STATSFC_RESULTS_VERSION', '1.6');
+define('STATSFC_RESULTS_VERSION', '1.6.1');
 
 /**
  * Adds StatsFC widget.
@@ -228,13 +228,13 @@ class StatsFC_Results extends WP_Widget
         $instance['key']         = strip_tags($new_instance['key']);
         $instance['competition'] = strip_tags($new_instance['competition']);
         $instance['team']        = strip_tags($new_instance['team']);
-        $instance['highlight']   = strip_tags($instance['highlight']);
+        $instance['highlight']   = strip_tags($new_instance['highlight']);
         $instance['from']        = strip_tags($new_instance['from']);
         $instance['to']          = strip_tags($new_instance['to']);
         $instance['limit']       = strip_tags($new_instance['limit']);
-        $instance['goals']       = strip_tags($instance['goals']);
-        $instance['show_badges'] = strip_tags($instance['show_badges']);
-        $instance['show_dates']  = strip_tags($instance['show_dates']);
+        $instance['goals']       = strip_tags($new_instance['goals']);
+        $instance['show_badges'] = strip_tags($new_instance['show_badges']);
+        $instance['show_dates']  = strip_tags($new_instance['show_dates']);
         $instance['order']       = strip_tags($new_instance['order']);
         $instance['timezone']    = strip_tags($new_instance['timezone']);
         $instance['default_css'] = strip_tags($new_instance['default_css']);
