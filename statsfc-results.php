@@ -3,7 +3,7 @@
 Plugin Name: StatsFC Results
 Plugin URI: https://statsfc.com/widgets/results
 Description: StatsFC Results
-Version: 1.6.1
+Version: 1.6.2
 Author: Will Woodward
 Author URI: http://willjw.co.uk
 License: GPL2
@@ -27,7 +27,7 @@ License: GPL2
 
 define('STATSFC_RESULTS_ID',      'StatsFC_Results');
 define('STATSFC_RESULTS_NAME',    'StatsFC Results');
-define('STATSFC_RESULTS_VERSION', '1.6.1');
+define('STATSFC_RESULTS_VERSION', '1.6.2');
 
 /**
  * Adds StatsFC widget.
@@ -143,7 +143,7 @@ class StatsFC_Results extends WP_Widget
         <p>
             <label>
                 <?php _e('To', STATSFC_RESULTS_ID); ?>
-                <input class="widefat" name="<?php echo $this->get_field_name('to'); ?>" type="text" value="<?php echo esc_attr($to); ?>" placeholder="e.g., <?php echo date('Y-m-d', '+2 weeks'); ?>, +2 weeks, next Monday">
+                <input class="widefat" name="<?php echo $this->get_field_name('to'); ?>" type="text" value="<?php echo esc_attr($to); ?>" placeholder="e.g., <?php echo date('Y-m-d', strtotime('+2 weeks')); ?>, +2 weeks, next Monday">
             </label>
         </p>
         <p>
