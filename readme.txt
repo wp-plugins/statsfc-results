@@ -4,7 +4,7 @@ Donate link:
 Tags: widget, football, soccer, results, premier league, fa cup, league cup
 Requires at least: 3.3
 Tested up to: 4.2.2
-Stable tag: 1.6.2
+Stable tag: 1.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,8 @@ You can also use the `[statsfc-results]` shortcode, with the following options:
 **1.6.1**: Fixed bug saving 'Highlight team', 'Show goals', 'Show badges' and 'Show dates' options
 
 **1.6.2**: Minor bug fix with `to` example value
+
+**1.6.3**: Fixed "Invalid domain" bug caused by referal domain
 
 == Upgrade notice ==
 
